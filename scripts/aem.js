@@ -113,6 +113,38 @@ function sampleRUM(checkpoint, data) {
 }
 
 /**
+ * Loads JS and CSS for a module and executes it's default export.
+ * @param {string} name The module name
+ * @param {string} jsPath The JS file to load
+ * @param {string} [cssPath] An optional CSS file to load
+ * @param {object[]} [args] Parameters to be passed to the default export when it is called
+ */
+async function loadModule(name, jsPath, cssPath, ...args) {
+  const cssLoaded = cssPath
+    ? new Promise((resolve) => { loadCSS(cssPath, resolve); })
+    : Promise.resolve();
+  const decorationComplete = jsPath
+    ? new Promise((resolve) => {
+      (async () => {
+        let mod;
+        try {
+          mod = await import(jsPath);
+          if (mod.default) {
+            await mod.default.apply(null, args);
+          }
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.log(`failed to load module for ${name}`, error);
+        }
+        resolve(mod);
+      })();
+    })
+    : Promise.resolve();
+  return Promise.all([cssLoaded, decorationComplete])
+    .then(([, api]) => api);
+}
+
+/**
  * Setup block utils.
  */
 function setup() {
@@ -121,6 +153,7 @@ function setup() {
   window.hlx.RUM_MANUAL_ENHANCE = true;
   window.hlx.codeBasePath = '';
   window.hlx.lighthouse = new URLSearchParams(window.location.search).get('lighthouse') === 'on';
+  window.hlx.plugins = new PluginsRegistry();
 
   const scriptEl = document.querySelector('script[src$="/scripts/scripts.js"]');
   if (scriptEl) {
@@ -652,6 +685,22 @@ async function loadFooter(footer) {
   footer.append(footerBlock);
   decorateBlock(footerBlock);
   return loadBlock(footerBlock);
+}
+
+/**
+ * Gets all the metadata elements that are in the given scope.
+ * @param {String} scope The scope/prefix for the metadata
+ * @returns an array of HTMLElement nodes that match the given scope
+ */
+export function getAllMetadata(scope) {
+  return [...document.head.querySelectorAll(`meta[property^="${scope}:"],meta[name^="${scope}-"]`)]
+    .reduce((res, meta) => {
+      const id = toClassName(meta.name
+        ? meta.name.substring(scope.length + 1)
+        : meta.getAttribute('property').split(':')[1]);
+      res[id] = meta.getAttribute('content');
+      return res;
+    }, {});
 }
 
 export const executionContext = {
