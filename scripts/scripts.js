@@ -11,6 +11,7 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  getMetadata
 } from './aem.js';
 
 // Define the custom audiences mapping for experience decisioning
