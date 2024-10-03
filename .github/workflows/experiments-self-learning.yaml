@@ -14,7 +14,7 @@ jobs:
       - id: step1
         uses: adobe-rnd/aem-experimentation-gh-actions/fetch-rum-insights@xwalk-test-data
         with:
-          domain: 'www.example.com'
+          domain: 'https://main--xwalk-self-learning--dereje24.hlx.live/'
           domain-key: ${{ secrets.RUM_DOMAIN_KEY }}
           days: 30
 
