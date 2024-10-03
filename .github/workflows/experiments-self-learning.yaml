@@ -39,14 +39,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: mab
+          ref: main
       - uses: devops-actions/json-to-file@v1.0.0
         with:
           json: ${{ needs.run-self-learning.outputs.config }}
           filename: 'experiments.splits.json'
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          branch: mab
+          branch: main
           commit_message: 'chore(mab): update experiment variants splits'
           file_pattern: 'experiments.splits.json'
 
