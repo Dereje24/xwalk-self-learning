@@ -12,7 +12,11 @@ jobs:
       rum-data: ${{ steps.step1.outputs.data }}
     steps:
       - id: step1
-        uses: adobe-rnd/aem-experimentation-gh-actions/fetch-rum-insights@xwalk-test-data
+        run: |
+          response=$(curl -s -H "Authorization: token ${{ secrets.RUM_DOMAIN_KEY }}" "https://main--xwalk-self-learning--dereje24.hlx.live")
+          echo "Response: $response"
+          echo "::set-output name=data::$response"
+      - uses: adobe-rnd/aem-experimentation-gh-actions/fetch-rum-insights@xwalk-test-data
         with:
           domain: 'https://main--xwalk-self-learning--dereje24.hlx.live'
           domain-key: ${{ secrets.RUM_DOMAIN_KEY }}
