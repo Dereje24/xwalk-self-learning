@@ -18,7 +18,7 @@ jobs:
           echo "::set-output name=data::$response"
       - uses: adobe-rnd/aem-experimentation-gh-actions/fetch-rum-insights@xwalk-test-data
         with:
-          domain: 'https://main--xwalk-self-learning--dereje24.hlx.live'
+          domain: 'www.example.com'
           domain-key: ${{ secrets.RUM_DOMAIN_KEY }}
           days: 30
 
