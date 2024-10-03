@@ -68,8 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch RUM insights for experiment
-        uses: adobe-rnd/aem-experimentation-gh-actions/fetch-rum-insights@xwalk-test-data
+        uses: adobe-rnd/aem-experiments-gh-actions/fetch-rum-insights@rumdata_concurrent
         with:
           domain-key: ${{ secrets.rum_domain_key }}
-          domain: 'www.petplace.com'
+          domain: 'www.example.com'
           days: 120
