@@ -25,7 +25,7 @@ jobs:
       config: ${{ steps.step1.outputs.config }}
     steps:
       - id: step1
-        uses: adobe-rnd/aem-experimentation-gh-actions/run-mab@main
+        uses: adobe-rnd/aem-experimentation-gh-actions/run-mab@xwalk-test-data
         with:
           rum_data: ${{ needs.fetch-rum-data.outputs.rum-data }}
           conversion_name: convert
