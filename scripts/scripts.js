@@ -11,7 +11,7 @@ import {
   loadSection,
   loadSections,
   loadCSS,
-  getMetadata
+  getMetadata,
 } from './aem.js';
 
 // Define the custom audiences mapping for experience decisioning
@@ -24,8 +24,8 @@ const AUDIENCES = {
 
 window.hlx.plugins.add('experimentation', {
   condition: () => getMetadata('experiment')
-    || Object.keys(getAllMetadata('campaign')).length
-    || Object.keys(getAllMetadata('audience')).length,
+    || Object.keys(getMetadata('campaign')).length
+    || Object.keys(getMetadata('audience')).length,
   options: { audiences: AUDIENCES },
   load: 'eager',
   url: '/plugins/experimentation/src/index.js',
@@ -164,7 +164,7 @@ function loadDelayed() {
     window.hlx.plugins.load('delayed');
     window.hlx.plugins.run('loadDelayed');
     import('./delayed.js');
-   }, 3000);
+  }, 3000);
   // load anything that can be postponed to the latest here
   import('./sidekick.js').then(({ initSidekick }) => initSidekick());
 }
