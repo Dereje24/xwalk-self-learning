@@ -1,75 +1,71 @@
-# name: Run self-learning experiments
-
-# on:
-#   workflow_dispatch: # For manual triggering during debug sessions
-#   schedule:
-#     - cron: '0 4 * * *' # Every day at 4am
-
-# jobs:
-#   fetch-rum-data:
-#     runs-on: ubuntu-latest
-#     outputs:
-#       rum-data: ${{ steps.step1.outputs.data }}
-#     steps:
-#       - id: step1
-#         run: |
-#           response=$(curl -s -H "Authorization: token ${{ secrets.RUM_DOMAIN_KEY }}" "https://main--xwalk-self-learning--dereje24.hlx.live")
-#           echo "Response: $response"
-#           echo "::set-output name=data::$response"
-#       - uses: adobe-rnd/aem-experimentation-gh-actions/fetch-rum-insights@xwalk-test-data
-#         with:
-#           domain: 'www.example.com'
-#           domain-key: ${{ secrets.RUM_DOMAIN_KEY }}
-#           days: 30
-
-#   run-self-learning:
-#     runs-on: ubuntu-latest
-#     needs: fetch-rum-data
-#     outputs:
-#       config: ${{ steps.step1.outputs.config }}
-#     steps:
-#       - id: step1
-#         uses: adobe-rnd/aem-experimentation-gh-actions/run-mab@main
-#         with:
-#           rum_data: ${{ needs.fetch-rum-data.outputs.rum-data }}
-#           conversion_name: convert
-#           conversion_value: some-value
-
-#   save-self-learning-config:
-#     runs-on: ubuntu-latest
-#     permissions:
-#       contents: write
-#     needs: run-self-learning
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           ref: mab
-#       - uses: devops-actions/json-to-file@v1.0.0
-#         with:
-#           json: ${{ needs.run-self-learning.outputs.config }}
-#           filename: 'experiments.splits.json'
-#       - uses: stefanzweifel/git-auto-commit-action@v5
-#         with:
-#           branch: mab
-#           commit_message: 'chore(mab): update experiment variants splits'
-#           file_pattern: 'experiments.splits.json'
-
-
-name: Fetch RUM insights
+name: Run self-learning experiments
 
 on:
+  workflow_dispatch: # For manual triggering during debug sessions
   schedule:
-    - cron: '0 0 * * *'  # Run every 24 hours
-  workflow_dispatch:  # Enable manual triggering
+    - cron: '0 4 * * *' # Every day at 4am
+
+jobs:
+  fetch-rum-data:
+    runs-on: ubuntu-latest
+    outputs:
+      rum-data: ${{ steps.step1.outputs.data }}
+    steps:
+      - id: step1
+        uses: adobe-rnd/aem-experimentation-gh-actions/fetch-rum-insights@xwalk-test-data
+        with:
+          domain: 'www.example.com'
+          domain-key: ${{ secrets.RUM_DOMAIN_KEY }}
+          days: 30
+
+  run-self-learning:
+    runs-on: ubuntu-latest
+    needs: fetch-rum-data
+    outputs:
+      config: ${{ steps.step1.outputs.config }}
+    steps:
+      - id: step1
+        uses: adobe-rnd/aem-experimentation-gh-actions/run-mab@main
+        with:
+          rum_data: ${{ needs.fetch-rum-data.outputs.rum-data }}
+          conversion_name: convert
+          conversion_value: some-value
+
+  save-self-learning-config:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: run-self-learning
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: mab
+      - uses: devops-actions/json-to-file@v1.0.0
+        with:
+          json: ${{ needs.run-self-learning.outputs.config }}
+          filename: 'experiments.splits.json'
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: mab
+          commit_message: 'chore(mab): update experiment variants splits'
+          file_pattern: 'experiments.splits.json'
+
+
+# name: Fetch RUM insights
+
+# on:
+#   schedule:
+#     - cron: '0 0 * * *'  # Run every 24 hours
+#   workflow_dispatch:  # Enable manual triggering
 
   
-jobs:
-  fetch-rum-insights:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Fetch RUM insights for experiment
-        uses: adobe-rnd/aem-experiments-gh-actions/fetch-rum-insights@rumdata_concurrent
-        with:
-          domain-key: ${{ secrets.rum_domain_key }}
-          domain: 'www.example.com'
-          days: 120
+# jobs:
+#   fetch-rum-insights:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Fetch RUM insights for experiment
+#         uses: adobe-rnd/aem-experiments-gh-actions/fetch-rum-insights@rumdata_concurrent
+#         with:
+#           domain-key: ${{ secrets.rum_domain_key }}
+#           domain: 'www.example.com'
+#           days: 120
